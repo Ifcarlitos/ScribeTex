@@ -1,0 +1,83 @@
+name: Desktop installers
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    tags: ['v*']
+  pull_request:
+    paths: ['src/**', 'src-tauri/**', 'package*.json', '*config*', '.github/**']
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: ${{ matrix.label }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - label: windows-x64
+            os: windows-latest
+            target: x86_64-pc-windows-msvc
+            bundles: nsis
+          - label: linux-x64
+            os: ubuntu-22.04
+            target: x86_64-unknown-linux-gnu
+            bundles: deb,appimage
+          - label: macos-arm64
+            os: macos-15
+            target: aarch64-apple-darwin
+            bundles: dmg
+          - label: macos-x64
+            os: macos-15-intel
+            target: x86_64-apple-darwin
+            bundles: dmg
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.target }}
+      - uses: swatinem/rust-cache@v2
+        with:
+          workspaces: src-tauri -> target
+      - name: Linux system dependencies
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libwebkit2gtk-4.1-dev build-essential curl wget file libxdo-dev libssl-dev librsvg2-dev libayatana-appindicator3-dev patchelf
+      - run: npm ci
+      - run: npm test
+      - name: Prepare verified bundled LaTeX engine
+        run: node .github/scripts/fetch-tectonic.mjs ${{ matrix.target }}
+      - name: Render sample PDF with bundled engine
+        run: npx tsx .github/scripts/smoke-pdf.ts
+      - name: Verify native PDF command
+        env:
+          TECTONIC_CACHE_DIR: ${{ github.workspace }}/src-tauri/target/tectonic-cache
+        run: cargo test --release --manifest-path src-tauri/Cargo.toml --target ${{ matrix.target }} -- --ignored
+      - name: Build native installer
+        run: npm run tauri build -- --target ${{ matrix.target }} --bundles ${{ matrix.bundles }} --config src-tauri/tauri.engine.conf.json
+      - name: Retain installers for download
+        uses: actions/upload-artifact@v4
+        with:
+          name: ScribeTex-${{ matrix.label }}
+          if-no-files-found: error
+          path: |
+            src-tauri/target/${{ matrix.target }}/release/bundle/nsis/*-setup.exe
+            src-tauri/target/${{ matrix.target }}/release/bundle/deb/*.deb
+            src-tauri/target/${{ matrix.target }}/release/bundle/appimage/*.AppImage
+            src-tauri/target/${{ matrix.target }}/release/bundle/dmg/*.dmg
+      - name: Retain PDF smoke evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ScribeTex-pdf-smoke-${{ matrix.label }}
+          if-no-files-found: warn
+          path: src-tauri/target/pdf-smoke/
