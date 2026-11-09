@@ -1,0 +1,110 @@
+name: Publish installers
+
+on:
+  workflow_dispatch:
+    inputs:
+      run_id:
+        description: Successful Desktop installers run to publish
+        required: true
+        default: '42688143937'
+  push:
+    branches: [main]
+    paths: ['.github/workflows/publish-release.yml']
+
+permissions:
+  actions: read
+  contents: write
+
+concurrency:
+  group: publish-installers
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GH_REPO: ${{ github.repository }}
+      SOURCE_RUN_ID: ${{ inputs.run_id || '42688143937' }}
+    steps:
+      - name: Verify successful source build and version
+        id: source
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const runId = Number(process.env.SOURCE_RUN_ID);
+            if (!Number.isSafeInteger(runId) || runId <= 0) throw new Error('Invalid source run');
+            const {data: run} = await github.rest.actions.getWorkflowRun({...context.repo, run_id: runId});
+            if (run.status !== 'completed' || run.conclusion !== 'success' ||
+                run.head_branch !== 'main' || run.head_repository.full_name !== process.env.GH_REPO ||
+                !['push', 'workflow_dispatch'].includes(run.event) ||
+                run.path !== '.github/workflows/desktop-build.yml') {
+              throw new Error('Only a successful trusted main desktop build can be published');
+            }
+            const {data: file} = await github.rest.repos.getContent({...context.repo, path: 'package.json', ref: run.head_sha});
+            const version = JSON.parse(Buffer.from(file.content, 'base64').toString()).version;
+            if (!/^\d+\.\d+\.\d+$/.test(version)) throw new Error('Invalid release version');
+            core.setOutput('version', version);
+            core.setOutput('sha', run.head_sha);
+      - name: Download the four verified platform artifacts
+        run: |
+          gh run download "$SOURCE_RUN_ID" --repo "$GH_REPO" --name ScribeTex-windows-x64 --dir downloads/windows
+          gh run download "$SOURCE_RUN_ID" --repo "$GH_REPO" --name ScribeTex-linux-x64 --dir downloads/linux
+          gh run download "$SOURCE_RUN_ID" --repo "$GH_REPO" --name ScribeTex-macos-arm64 --dir downloads/macos-arm64
+          gh run download "$SOURCE_RUN_ID" --repo "$GH_REPO" --name ScribeTex-macos-x64 --dir downloads/macos-x64
+      - name: Collect installers and SHA-256 checksums
+        env:
+          VERSION: ${{ steps.source.outputs.version }}
+        run: |
+          python3 - <<'PY'
+          import hashlib, os, pathlib, shutil
+          version = os.environ['VERSION']
+          expected = {
+              f'ScribeTex_{version}_x64-setup.exe',
+              f'ScribeTex_{version}_amd64.deb',
+              f'ScribeTex_{version}_amd64.AppImage',
+              f'ScribeTex_{version}_aarch64.dmg',
+              f'ScribeTex_{version}_x64.dmg',
+          }
+          destination = pathlib.Path('release')
+          destination.mkdir()
+          found = set()
+          for source in pathlib.Path('downloads').rglob('*'):
+              if source.is_file() and source.name in expected:
+                  if source.name in found or source.stat().st_size < 1000:
+                      raise RuntimeError(f'Invalid or duplicate installer: {source.name}')
+                  shutil.copyfile(source, destination / source.name)
+                  found.add(source.name)
+          if found != expected:
+              raise RuntimeError(f'Missing installers: {expected - found}')
+          sums = [f'{hashlib.sha256((destination / name).read_bytes()).hexdigest()}  {name}\n' for name in sorted(found)]
+          (destination / 'SHA256SUMS.txt').write_text(''.join(sums))
+          PY
+      - name: Publish complete prerelease with direct downloads
+        env:
+          VERSION: ${{ steps.source.outputs.version }}
+          SOURCE_SHA: ${{ steps.source.outputs.sha }}
+        run: |
+          cat > notes.md <<'NOTES'
+          Editor visual de escritorio con generación PDF mediante LaTeX y motor Tectonic incluido.
+
+          Descarga el archivo de tu sistema en Assets:
+          - Windows x64: instalador `x64-setup.exe`.
+          - Linux x64: paquete `.deb` o `.AppImage`.
+          - macOS Apple Silicon: `aarch64.dmg`; macOS Intel: `x64.dmg`.
+
+          Incluye fórmulas guiadas, matrices, integrales, sistemas y modo LaTeX matemático avanzado.
+
+          Versión preliminar. Los instaladores no están firmados ni notarizados. No necesitas instalar LaTeX: la primera generación PDF necesita Internet para descargar paquetes y fuentes. Windows requiere WebView2; Linux puede requerir bibliotecas del sistema. La interfaz se ha probado manualmente en Windows; los cuatro destinos superaron la compilación y sus pruebas PDF.
+
+          Comprueba las descargas con `SHA256SUMS.txt`.
+          NOTES
+          printf '\nCompilación verificada: https://github.com/%s/actions/runs/%s\n' "$GH_REPO" "$SOURCE_RUN_ID" >> notes.md
+          tag="v$VERSION"
+          if gh release view "$tag" --repo "$GH_REPO" --json isDraft > existing.json 2>/dev/null; then
+            python3 -c "import json; assert json.load(open('existing.json'))['isDraft'], 'Release already published; refusing to replace downloads'"
+          else
+            gh release create "$tag" --repo "$GH_REPO" --target "$SOURCE_SHA" --title "ScribeTex $VERSION — Alpha" --notes-file notes.md --draft --prerelease
+          fi
+          gh release upload "$tag" release/* --repo "$GH_REPO" --clobber
+          gh release edit "$tag" --repo "$GH_REPO" --draft=false --prerelease --notes-file notes.md
