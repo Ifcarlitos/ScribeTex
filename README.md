@@ -9,7 +9,7 @@
     <img src="https://img.shields.io/badge/status-alpha-orange.svg" alt="Versión inicial alpha" />
     <img src="https://img.shields.io/badge/platforms-Windows%20%7C%20Linux%20%7C%20macOS-235aa2.svg" alt="Windows, Linux y macOS" />
   </p>
-  <p><a href="https://github.com/Ifcarlitos/ScribeTex/actions/workflows/desktop-build.yml">Descargar</a> · <a href="docs/DEVELOPMENT.md">Desarrollo</a> · <a href="CONTRIBUTING.md">Contribuir</a> · <a href="https://github.com/Ifcarlitos/ScribeTex/issues">Comunicar un problema</a></p>
+  <p><a href="https://github.com/Ifcarlitos/ScribeTex/releases/tag/v0.2.0">Descargar</a> · <a href="docs/DEVELOPMENT.md">Desarrollo</a> · <a href="CONTRIBUTING.md">Contribuir</a> · <a href="https://github.com/Ifcarlitos/ScribeTex/issues">Comunicar un problema</a></p>
 </div>
 
 ## ¿Qué es ScribeTex?
@@ -22,15 +22,15 @@ La aplicación incluye **Tectonic**, un motor LaTeX que genera el PDF en tu equi
 
 ## Descargar e instalar
 
-Mientras no haya una release publicada, descarga los instaladores desde los **Artifacts** de una [compilación correcta de GitHub Actions](https://github.com/Ifcarlitos/ScribeTex/actions/workflows/desktop-build.yml). GitHub requiere iniciar sesión para descargar estos ZIP; descomprímelos antes de abrir el instalador. Las entregas públicas estables se distribuirán más adelante en [Releases](https://github.com/Ifcarlitos/ScribeTex/releases).
+Descarga **ScribeTex 0.2.0 Alpha** desde [Releases](https://github.com/Ifcarlitos/ScribeTex/releases/tag/v0.2.0) o usa los enlaces directos de esta tabla. **No necesitas iniciar sesión en GitHub.** Elige el instalador de tu sistema; los archivos «Source code» contienen el código fuente y no son instaladores.
 
 | Sistema | Descarga | Instalación |
 | --- | --- | --- |
-| Windows x64 | `ScribeTex_0.2.0_x64-setup.exe` · ~16 MiB | Ejecutar el instalador por usuario |
-| Linux Debian/Ubuntu x64 | `ScribeTex_0.2.0_amd64.deb` · ~14 MiB | Abrir con el gestor de paquetes |
-| Linux x64 | `ScribeTex_0.2.0_amd64.AppImage` · ~88 MiB | Dar permiso de ejecución y abrir |
-| macOS Apple Silicon | `ScribeTex_0.2.0_aarch64.dmg` · ~24 MiB | Arrastrar ScribeTex a Aplicaciones |
-| macOS Intel | `ScribeTex_0.2.0_x64.dmg` · ~24 MiB | Arrastrar ScribeTex a Aplicaciones |
+| Windows x64 | [Descargar .exe](https://github.com/Ifcarlitos/ScribeTex/releases/download/v0.2.0/ScribeTex_0.2.0_x64-setup.exe) · ~16 MiB | Ejecutar el instalador por usuario |
+| Linux Debian/Ubuntu x64 | [Descargar .deb](https://github.com/Ifcarlitos/ScribeTex/releases/download/v0.2.0/ScribeTex_0.2.0_amd64.deb) · ~14 MiB | Abrir con el gestor de paquetes |
+| Linux x64 | [Descargar .AppImage](https://github.com/Ifcarlitos/ScribeTex/releases/download/v0.2.0/ScribeTex_0.2.0_amd64.AppImage) · ~88 MiB | Dar permiso de ejecución y abrir |
+| macOS Apple Silicon | [Descargar .dmg ARM64](https://github.com/Ifcarlitos/ScribeTex/releases/download/v0.2.0/ScribeTex_0.2.0_aarch64.dmg) · ~24 MiB | Arrastrar ScribeTex a Aplicaciones |
+| macOS Intel | [Descargar .dmg Intel](https://github.com/Ifcarlitos/ScribeTex/releases/download/v0.2.0/ScribeTex_0.2.0_x64.dmg) · ~24 MiB | Arrastrar ScribeTex a Aplicaciones |
 
 Los tamaños son aproximados para la versión 0.2.0. Cada entrega incluye un archivo `SHA256SUMS.txt` para comprobar sus descargas.
 
