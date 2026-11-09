@@ -11,6 +11,7 @@
     "test": "tsx --test src/lib/latex.test.ts"
   },
   "dependencies": {
+    "@floating-ui/dom": "^1.8.0",
     "@tauri-apps/api": "^2.0.0",
     "@tiptap/extension-image": "^3.0.0",
     "@tiptap/extension-mathematics": "^3.33.0",
