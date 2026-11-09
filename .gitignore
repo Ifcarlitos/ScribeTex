@@ -1,0 +1,8 @@
+node_modules/
+dist/
+src-tauri/target/
+src-tauri/gen/
+*.local
+*.tsbuildinfo
+src-tauri/engines/
+src-tauri/tauri.engine.conf.json
