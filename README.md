@@ -26,13 +26,13 @@ Mientras no haya una release publicada, descarga los instaladores desde los **Ar
 
 | Sistema | Descarga | Instalación |
 | --- | --- | --- |
-| Windows x64 | `ScribeTex_0.1.0_x64-setup.exe` · ~16 MiB | Ejecutar el instalador por usuario |
-| Linux Debian/Ubuntu x64 | `ScribeTex_0.1.0_amd64.deb` · ~14 MiB | Abrir con el gestor de paquetes |
-| Linux x64 | `ScribeTex_0.1.0_amd64.AppImage` · ~88 MiB | Dar permiso de ejecución y abrir |
-| macOS Apple Silicon | `ScribeTex_0.1.0_aarch64.dmg` · ~24 MiB | Arrastrar ScribeTex a Aplicaciones |
-| macOS Intel | `ScribeTex_0.1.0_x64.dmg` · ~24 MiB | Arrastrar ScribeTex a Aplicaciones |
+| Windows x64 | `ScribeTex_0.2.0_x64-setup.exe` · ~16 MiB | Ejecutar el instalador por usuario |
+| Linux Debian/Ubuntu x64 | `ScribeTex_0.2.0_amd64.deb` · ~14 MiB | Abrir con el gestor de paquetes |
+| Linux x64 | `ScribeTex_0.2.0_amd64.AppImage` · ~88 MiB | Dar permiso de ejecución y abrir |
+| macOS Apple Silicon | `ScribeTex_0.2.0_aarch64.dmg` · ~24 MiB | Arrastrar ScribeTex a Aplicaciones |
+| macOS Intel | `ScribeTex_0.2.0_x64.dmg` · ~24 MiB | Arrastrar ScribeTex a Aplicaciones |
 
-Los tamaños son aproximados para la versión 0.1.0. Cada entrega incluye un archivo `SHA256SUMS.txt` para comprobar sus descargas.
+Los tamaños son aproximados para la versión 0.2.0. Cada entrega incluye un archivo `SHA256SUMS.txt` para comprobar sus descargas.
 
 **Primer PDF:** necesitas conexión para que Tectonic descargue automáticamente los paquetes y las fuentes que utiliza el documento. Después se reutilizan desde la caché. La primera conversión puede tardar varios minutos; los recursos nuevos pueden requerir nuevas descargas. No se incluye una caché completa para trabajar sin conexión desde el primer uso.
 
@@ -105,7 +105,7 @@ La [compilación de referencia de 0.1.0](https://github.com/Ifcarlitos/ScribeTex
 
 En Windows también se han probado manualmente la instalación, la generación, la previsualización y la descarga del PDF. La interfaz de macOS y Linux todavía no se ha revisado manualmente.
 
-La versión 0.2.0 amplía las fórmulas e incluye 33 pruebas del serializador y del editor matemático. Su prueba PDF incluye integrales, sumatorios, límites, matrices, sistemas y funciones por tramos. Consulta en Actions los resultados correspondientes a cada versión.
+La versión 0.2.0 amplía las fórmulas e incluye 33 pruebas del serializador y del editor matemático. Su prueba PDF incluye integrales, sumatorios, límites, matrices, sistemas y funciones por tramos. La [compilación de 0.2.0](https://github.com/Ifcarlitos/ScribeTex/actions/runs/42688143937) ha generado los instaladores de las cuatro variantes y superado sus pruebas PDF.
 
 ## Colaborar
 
