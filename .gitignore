@@ -6,3 +6,16 @@ src-tauri/gen/
 *.tsbuildinfo
 src-tauri/engines/
 src-tauri/tauri.engine.conf.json
+output/
+.env
+.env.*
+!.env.example
+*.log
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.pfx
+*.p12
+*.pem
+*.key

@@ -3,6 +3,7 @@ import { execFileSync } from 'node:child_process';
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { toLatexProject } from '../../src/lib/latex';
+import { formulaTemplates, templateDefaults } from '../../src/lib/math';
 
 const output = path.resolve('src-tauri/target/pdf-smoke');
 await mkdir(output, { recursive: true });
@@ -14,6 +15,10 @@ const project = toLatexProject({ type: 'doc', content: [
   paragraph('Documento generado sin instalar TeX Live. Español: diseño, ecuación, información. 50% & precio $12.'),
   { type: 'paragraph', content: [{ type: 'text', text: 'Negrita, cursiva y subrayado', marks: [{ type: 'bold' }, { type: 'italic' }, { type: 'underline' }] }] },
   { type: 'blockMath', attrs: { latex: '\\frac{1}{2} + x^2 = 4' } },
+  ...formulaTemplates.filter(template=>['integral','sum','limit','matrix','system','cases','quadratic'].includes(template.id)).flatMap(template=>[
+    paragraph(template.name),
+    {type:'blockMath',attrs:{latex:template.build(templateDefaults(template))}},
+  ]),
   { type: 'table', content: [
     { type: 'tableRow', content: [{ type: 'tableHeader', content: [paragraph('Elemento')] }, { type: 'tableHeader', content: [paragraph('Valor')] }] },
     { type: 'tableRow', content: [{ type: 'tableCell', content: [paragraph('A & B')] }, { type: 'tableCell', content: [paragraph('42')] }] },

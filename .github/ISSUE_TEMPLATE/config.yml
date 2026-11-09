@@ -1,0 +1,5 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Seguridad
+    url: https://github.com/Ifcarlitos/ScribeTex/blob/main/SECURITY.md
+    about: Cómo comunicar una posible vulnerabilidad sin publicar datos sensibles.

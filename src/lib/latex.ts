@@ -1,4 +1,5 @@
 import type { JSONContent } from '@tiptap/react';
+import { validateMath } from './math';
 
 export function escapeLatex(text: string): string {
   const escaped: Record<string, string> = { '\\': '\\textbackslash{}', '{': '\\{', '}': '\\}', '$': '\\$', '&': '\\&', '#': '\\#', '%': '\\%', '_': '\\_', '~': '\\textasciitilde{}', '^': '\\textasciicircum{}' };
@@ -80,9 +81,9 @@ function render(node: JSONContent, context: Context): string {
       return `\\par\\noindent\\includegraphics[width=0.9\\linewidth,height=0.7\\textheight,keepaspectratio]{${name}}\\par\n`;
     }
     case 'inlineMath': case 'blockMath': {
-      const latex = String(node.attrs?.latex ?? '');
-      const stripped = latex.replace(/\\(frac|sqrt|alpha|beta|gamma|pi|sum|int|infty|cdot|times)\b/g,'');
-      if(latex.length>2000 || /[^a-zA-Z0-9\s{}+\-=().,^_]/.test(stripped)) throw Error('La ecuación contiene operaciones no compatibles.');
+      let latex: string;
+      try {latex = validateMath(String(node.attrs?.latex ?? ''),node.type==='blockMath').latex;}
+      catch(error){throw Error(`Revisa la ecuación antes de exportar. ${error instanceof Error?error.message:String(error)}`);}
       return node.type === 'inlineMath' ? `\\(${latex}\\)` : `\\[${latex}\\]\n`;
     }
     default: throw new Error(`Contenido todavía no exportable: ${node.type}`);
