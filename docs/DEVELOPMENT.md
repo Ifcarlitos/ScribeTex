@@ -94,6 +94,14 @@ npm run tauri build -- --bundles dmg --config src-tauri/tauri.engine.conf.json
 
 Los paquetes aparecen en `src-tauri/target/release/bundle/`. Si usas `--target`, aparecen bajo `src-tauri/target/<target>/release/bundle/`. El flujo de GitHub Actions realiza las pruebas y genera los paquetes en Windows, Linux y macOS nativos. Guarda sus resultados como artefactos; no publica automáticamente una release.
 
+## Publicar descargas en Releases
+
+En GitHub, abre **Actions → Publish installers → Run workflow** e introduce el ID de una ejecución correcta de **Desktop installers** sobre `main`. El flujo recupera sus cuatro artefactos, exige los cinco instaladores de la versión correspondiente y genera `SHA256SUMS.txt`. Publica una versión preliminar con descargas directas que no requieren iniciar sesión.
+
+La etiqueta apunta al commit que generó los instaladores. El flujo rechaza compilaciones fallidas, ramas distintas de `main` y la sustitución de una release ya publicada. Si una carga se interrumpe antes de publicar, puede reanudarse sobre el borrador. Las pruebas y los instaladores deben volver a generarse al cambiar la aplicación; no se reutilizan artefactos de otra versión.
+
+Después de publicar, actualiza los enlaces de descarga del README. Los errores históricos de Actions se conservan como registro: consulta la ejecución más reciente y su commit al diagnosticar una notificación antigua.
+
 ## Estructura
 
 ```text
